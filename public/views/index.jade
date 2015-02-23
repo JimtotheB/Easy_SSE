@@ -1,0 +1,43 @@
+doctype html
+head
+  title Server Sent Events
+  meta(name='viewport', content='width=device-width, initial-scale=1')
+  link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.2/css/bootstrap.min.css')
+
+body
+  .container-fluid
+    .row
+
+      .col-md-12
+        h1 Server Sent Events, with Express.
+
+    .row
+
+      .col-md-4
+        .well
+          h3 Client Count:
+            span#clientCount
+          h3 Triggered Events:
+            span#triggeredEvents
+          button#triggerEvent Trigger Server Event
+
+          h2 Server Memory Usage:
+          h4 Heap Total:
+            span#HeapT
+          h4 Heap Used:
+            span#HeapU
+          h4 Resident Set Size:
+            span#RSS
+
+      .col-md-8
+        h3 Does your app really need Websockets?
+        p Most people immediately reach for the websocket/socket.io toolkit when their workflow
+         |includes the need to syncronise data on the server with multiple clients.
+
+        p But unless you need a realtime bi-directional stream of data, you may be better served with some
+         |relatively simple additions to your current API.
+
+    .row
+      .col-md-12
+        h1 Documentation.
+  include scripts

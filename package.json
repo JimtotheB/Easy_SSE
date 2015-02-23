@@ -1,0 +1,17 @@
+{
+  "name": "express-SSE",
+  "version": "0.0.0",
+  "description": "ExpressJS server sent events",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jim <monstertke@paperelectron.com> (http://paperelectron.com/)",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.11.2",
+    "jade": "^1.9.2",
+    "lodash": "^3.3.0"
+  }
+}
