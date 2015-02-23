@@ -17,10 +17,12 @@ In a soft realtime situation the better option may just be SSE, which is a fairl
 ### How can I test this out?
 
 ``` shell
- $ git clone && npm install
+ $ git clone https://github.com/PaperElectron/Easy_SSE.git
+ $ npm install
  $ npm start
 ```
-Visit localhost:8080 in your browser.
+Open localhost:8080/ in a few browser windows and
+start clicking some buttons.
 
 ### More info?
  

@@ -1,0 +1,31 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            
+                <h1>server.js</h1>
+            
+        </div>
+    </div>
+    <div class="row">
+        
+        
+            <div class="col-md-6">
+                
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>);
+<span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">'http'</span>);
+<span class="hljs-keyword">var</span> app = express();
+
+
+<span class="hljs-keyword">var</span> expressConfig = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./expressConfig'</span>)(app);
+<span class="hljs-keyword">var</span> expressRoutes = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./expressRoutes'</span>)(app);
+<span class="hljs-keyword">var</span> server = http.createServer(app);
+
+server.listen(<span class="hljs-number">8080</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">serverStarted</span><span class="hljs-params">()</span></span>{
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Started server on 8080"</span>)
+})</pre></div></div>
+            
+        
+    </div>
+</div>

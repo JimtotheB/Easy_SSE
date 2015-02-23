@@ -19,7 +19,8 @@ body
             span#clientCount
           h3 Triggered Events:
             span#triggeredEvents
-          button#triggerEvent Trigger Server Event
+          button.btn.btn-primary#triggerEvent Trigger Server Event
+
 
           h2 Server Memory Usage:
           h4 Heap Total:
@@ -36,8 +37,19 @@ body
 
         p But unless you need a realtime bi-directional stream of data, you may be better served with some
          |relatively simple additions to your current API.
-
+    .row
+      .col-md-12
+        button.btn.btn-primary#complexEvent Trigger Complex Event.
+        button.btn.btn-danger#clearComplex Clear Complex Example.
+      .col-md-12#reddit
+        h1 Complex example.
+         span#requestUrl
+        ul.list-unstyled#redditData
     .row
       .col-md-12
         h1 Documentation.
+        include ../docs/expressRoutes.html
+        include ../docs/event-stream.html
+
+
   include scripts

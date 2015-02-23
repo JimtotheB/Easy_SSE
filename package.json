@@ -5,13 +5,17 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docs": "docco lib/*.js public/js/*.js -o ./public/docs -t ./public/docs/bootstrap-bare/docco.jst -c ./public/docs/bootstrap-bare/docco.css"
   },
   "author": "Jim <monstertke@paperelectron.com> (http://paperelectron.com/)",
   "license": "MIT",
   "dependencies": {
+    "docco": "^0.7.0",
+    "dox": "^0.6.1",
     "express": "^4.11.2",
     "jade": "^1.9.2",
-    "lodash": "^3.3.0"
+    "lodash": "^3.3.0",
+    "request": "^2.53.0"
   }
 }

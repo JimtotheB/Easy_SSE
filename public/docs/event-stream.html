@@ -1,0 +1,187 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            
+                <h1>event-stream.js</h1>
+            
+        </div>
+    </div>
+    <div class="row">
+        
+        
+            <div class="col-md-6">
+                <p>Belt and suspenders.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">($)</span></span>{
+  $(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">var</span> source;
+
+    <span class="hljs-keyword">var</span> triggerButton = $(<span class="hljs-string">'#triggerEvent'</span>);
+
+    <span class="hljs-keyword">var</span> clientCount = $(<span class="hljs-string">'#clientCount'</span>);
+    <span class="hljs-keyword">var</span> triggerCount = $(<span class="hljs-string">'#triggeredEvents'</span>);
+    <span class="hljs-keyword">var</span> HeapT = $(<span class="hljs-string">'#HeapT'</span>);
+    <span class="hljs-keyword">var</span> HeapU = $(<span class="hljs-string">'#HeapU'</span>);
+    <span class="hljs-keyword">var</span> RSS = $(<span class="hljs-string">'#RSS'</span>);
+
+    <span class="hljs-keyword">var</span> complexButton = $(<span class="hljs-string">'#complexEvent'</span>);
+    <span class="hljs-keyword">var</span> clearButton = $(<span class="hljs-string">'#clearComplex'</span>);
+    <span class="hljs-keyword">var</span> requestUrl = $(<span class="hljs-string">'#requestUrl'</span>)
+    <span class="hljs-keyword">var</span> redditContainer = $(<span class="hljs-string">'#reddit'</span>);
+    <span class="hljs-keyword">var</span> redditList = $(<span class="hljs-string">'#redditData'</span>);
+    redditContainer.hide()</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Modern browsers, just like everything else cool.
+Should probably bail here if it isn’t available.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+    <span class="hljs-keyword">if</span>(!!<span class="hljs-built_in">window</span>.EventSource) {
+      source = <span class="hljs-keyword">new</span> EventSource(<span class="hljs-string">'event-stream'</span>)
+    }</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Add event listener for the ‘incoming’ event setup on the server.
+The inclusion of the event parameter in the server side event
+makes it pretty easy to put multiple handlers into one event stream url
+from your server.</p>
+<p>This fires on page load, and on triggerEvent button click.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+    source.addEventListener(<span class="hljs-string">'incoming'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-keyword">var</span> data = <span class="hljs-built_in">JSON</span>.parse(evt.data);
+      <span class="hljs-built_in">console</span>.log(data)
+      clientCount.html(<span class="hljs-string">'  '</span> + data.clientCount + <span class="hljs-string">'  '</span>);
+      triggerCount.html(<span class="hljs-string">'  '</span> + data.triggerCount + <span class="hljs-string">'  '</span>);
+      HeapT.html(<span class="hljs-string">'  '</span> + formatMemory(data.memUsage.heapTotal) + <span class="hljs-string">' '</span>);
+      HeapU.html(<span class="hljs-string">'  '</span> + formatMemory(data.memUsage.heapUsed) + <span class="hljs-string">' '</span>);
+      RSS.html(<span class="hljs-string">'  '</span> + formatMemory(data.memUsage.rss) + <span class="hljs-string">' '</span>);
+    }, <span class="hljs-literal">false</span>)</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>This fires on complexEvent button click. Contains reddit json data, fetched from
+reddit by the server, and passed to our event stream via eventEmitter.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+    source.addEventListener(<span class="hljs-string">'complex'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-keyword">var</span> data = <span class="hljs-built_in">JSON</span>.parse(evt.data)
+      redditList.empty()
+      redditContainer.show()</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Quick little lodash template string for reddit data</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+      <span class="hljs-keyword">var</span> red = <span class="hljs-string">'&lt;li&gt;'</span>
+      red += <span class="hljs-string">'&lt;h3&gt;&lt;%= title %&gt; &lt;/h3&gt;'</span>
+      red += <span class="hljs-string">'&lt;p&gt;&lt;%- selftext %&gt;&lt;/p&gt;'</span>
+      red += <span class="hljs-string">'&lt;p&gt;&lt;a href="&lt;%- permalink %&gt;"&gt;Comments&lt;/a&gt;&lt;/p&gt;'</span>
+      red += <span class="hljs-string">'&lt;p&gt;&lt;a href="&lt;%- url %&gt;"&gt;Link&lt;/a&gt;&lt;/p&gt;'</span>
+      red += <span class="hljs-string">'&lt;/li&gt;'</span>
+
+      <span class="hljs-keyword">var</span> template = _.template(red)
+      requestUrl.html(<span class="hljs-string">' '</span> + data.url + <span class="hljs-string">' '</span>)</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>This isn’t the best way to do this, but its a demo after all.
+Just trying to show a bunch of data moving in and out.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>      _.each(data.posts.data.children, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(v)</span> </span>{
+        redditList.append(template({
+          title: v.data.title,
+          selftext: v.data.selftext,
+          permalink: <span class="hljs-string">'https://www.reddit.com'</span> + v.data.permalink,
+          url: v.data.url
+        }))
+      });
+    }, <span class="hljs-literal">false</span>);
+
+    source.addEventListener(<span class="hljs-string">'open'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"Opened Event stream."</span>)
+    }, <span class="hljs-literal">false</span>);
+
+    source.addEventListener(<span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'There was an error in the event-stream.'</span>);
+      <span class="hljs-built_in">console</span>.log(evt)
+    }, <span class="hljs-literal">false</span>);</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Please ignore the mixed use of vanilla js and jQuery here and elsewhere. I only added it
+once I decided to style the page with bootstrap.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>    triggerButton.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'click'</span>)
+      <span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> XMLHttpRequest();
+      req.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'/trigger'</span>, <span class="hljs-literal">true</span>);
+      req.send();
+    });
+
+    complexButton.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      <span class="hljs-keyword">var</span> req = <span class="hljs-keyword">new</span> XMLHttpRequest();
+      req.open(<span class="hljs-string">'GET'</span>, <span class="hljs-string">'/complex'</span>, <span class="hljs-literal">true</span>);
+      req.send();
+    });
+
+    clearButton.on(<span class="hljs-string">'click'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(evt)</span> </span>{
+      redditContainer.hide()
+      redditList.empty()
+
+    });
+  });
+})(jQuery);</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Nicely formatted memory numbers.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">formatMemory</span><span class="hljs-params">(bytes)</span> </span>{
+  <span class="hljs-keyword">var</span> thresh, u, units;
+  thresh = <span class="hljs-number">1000</span>;
+  <span class="hljs-keyword">if</span> (bytes &lt; thresh) {
+    <span class="hljs-keyword">return</span> bytes + <span class="hljs-string">" B"</span>;
+  }
+  units = [<span class="hljs-string">"kB"</span>, <span class="hljs-string">"MB"</span>, <span class="hljs-string">"GB"</span>, <span class="hljs-string">"TB"</span>, <span class="hljs-string">"PB"</span>, <span class="hljs-string">"EB"</span>, <span class="hljs-string">"ZB"</span>, <span class="hljs-string">"YB"</span>];
+  u = -<span class="hljs-number">1</span>;
+  <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) {
+    bytes /= thresh;
+    ++u;
+    <span class="hljs-keyword">if</span> (!(bytes &gt;= thresh)) {
+      <span class="hljs-keyword">break</span>;
+    }
+  }
+  <span class="hljs-keyword">return</span> bytes.toFixed(<span class="hljs-number">1</span>) + <span class="hljs-string">" "</span> + units[u];
+};</pre></div></div>
+            
+        
+    </div>
+</div>

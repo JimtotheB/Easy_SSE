@@ -1,0 +1,28 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            
+                <h1>expressConfig.js</h1>
+            
+        </div>
+    </div>
+    <div class="row">
+        
+        
+            <div class="col-md-6">
+                
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre><span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">'path'</span>);
+<span class="hljs-keyword">var</span> cwd = process.cwd();
+<span class="hljs-keyword">var</span> static = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>).static;
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">expressConfig</span><span class="hljs-params">(app)</span></span>{
+  app.use(static(path.join(cwd, <span class="hljs-string">'public'</span>)))
+  app.set(<span class="hljs-string">'views'</span>, path.join(cwd, <span class="hljs-string">'public'</span>, <span class="hljs-string">'views'</span>));
+  app.set(<span class="hljs-string">'view engine'</span>, <span class="hljs-string">'jade'</span>)
+}</pre></div></div>
+            
+        
+    </div>
+</div>

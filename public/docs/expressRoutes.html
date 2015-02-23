@@ -1,0 +1,205 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            
+                <h1>expressRoutes.js</h1>
+            
+        </div>
+    </div>
+    <div class="row">
+        
+        
+            <div class="col-md-6">
+                
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre><span class="hljs-keyword">var</span> router = <span class="hljs-built_in">require</span>(<span class="hljs-string">'express'</span>).Router();
+<span class="hljs-keyword">var</span> routes = {};
+<span class="hljs-keyword">var</span> _ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'lodash'</span>);
+<span class="hljs-keyword">var</span> request = <span class="hljs-built_in">require</span>(<span class="hljs-string">'request'</span>);
+<span class="hljs-keyword">var</span> events = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>).EventEmitter;
+<span class="hljs-keyword">var</span> ServerEvents = <span class="hljs-keyword">new</span> events();</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Set maximum event listeners to unlimited.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>ServerEvents.setMaxListeners(<span class="hljs-number">0</span>)
+
+<span class="hljs-keyword">var</span> eventData = {};
+eventData.triggerCount = <span class="hljs-number">0</span>;
+eventData.clientCount = <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">var</span> redUrls = [
+  <span class="hljs-string">'https://www.reddit.com/r/node.json'</span>,
+  <span class="hljs-string">'https://www.reddit.com/r/javascript.json'</span>,
+  <span class="hljs-string">'https://www.reddit.com/r/webdev.json'</span>
+];</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Using Express Router here.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">expressRoutes</span><span class="hljs-params">(app)</span></span>{
+
+  app.get(<span class="hljs-string">'/'</span>, routes.index);
+  app.get(<span class="hljs-string">'/trigger'</span>, routes.trigger);
+  app.get(<span class="hljs-string">'/complex'</span>, routes.complex)
+  app.get(<span class="hljs-string">'/event-stream'</span>, routes.events);
+  app.use(<span class="hljs-string">'/'</span>, router);
+
+  <span class="hljs-keyword">return</span> router
+};</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Render our main page.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+routes.index = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  res.render(<span class="hljs-string">'index'</span>)
+};</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Our simple stat gatehering event.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+routes.trigger = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  eventData.triggerCount = eventData.triggerCount += <span class="hljs-number">1</span>
+  ServerEvents.emit(<span class="hljs-string">'incoming'</span>);
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Trigger count: '</span> + eventData.triggerCount)
+  res.json({status: <span class="hljs-string">"success"</span>});
+};</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Fetch data from reddit and emit the ‘complex’ event with the returned json.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+routes.complex = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  <span class="hljs-keyword">var</span> thisReq = redUrls.pop()
+  redUrls.unshift(thisReq)
+  request(thisReq, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(err, resp, body)</span></span>{
+    <span class="hljs-keyword">var</span> posts = <span class="hljs-built_in">JSON</span>.parse(body);
+    <span class="hljs-keyword">var</span> data = <span class="hljs-built_in">JSON</span>.stringify({url: thisReq, posts: posts})
+    ServerEvents.emit(<span class="hljs-string">'complex'</span>, data)
+    res.json({status: <span class="hljs-string">"success"</span>})
+  })
+
+};</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Event streamer, maintains a persistent connection with the browser.
+Content-Type is ‘text/event-stream’</p>
+<p>Note: depending on the browser, you will only be able to open a limited number of
+Persistent connections to your server on the same domain. In chrome, I found that I could open
+5 instances of the page before things went haywire, while the limit is technically 6, on the 6th page
+the browser no longer has any available connections to load page resources with.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+routes.events = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(req, res)</span></span>{
+  eventData.clientCount = eventData.clientCount += <span class="hljs-number">1</span>
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Client Count: '</span> + eventData.clientCount)
+  req.socket.setTimeout(<span class="hljs-number">60</span> * <span class="hljs-number">60</span> * <span class="hljs-number">1000</span>);
+  res.writeHead(<span class="hljs-number">200</span>, {
+    <span class="hljs-string">'Content-Type'</span>: <span class="hljs-string">'text/event-stream'</span>,
+    <span class="hljs-string">'Cache-Control'</span>: <span class="hljs-string">'no-cache'</span>,
+    <span class="hljs-string">'Connection'</span>: <span class="hljs-string">'keep-alive'</span>
+  });
+  res.write(<span class="hljs-string">'\n'</span>)</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Store a reference to out event handler so we can bind and unbind it
+in the correct context. Otherwise it will fire for every client that has ever connected to
+this event stream.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>  <span class="hljs-keyword">var</span> handleComplex = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span></span>{
+    res.write(<span class="hljs-string">'event: complex\n'</span>);
+    res.write(<span class="hljs-string">'data: '</span> + data + <span class="hljs-string">'\n\n'</span>);
+  };
+
+  <span class="hljs-keyword">var</span> handleIncoming = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+    eventData.memUsage = process.memoryUsage()</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>event: allows you to bind to a specific event on the client side.
+This allows you to handle multiple event streams easily from one endpoint.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>    res.write(<span class="hljs-string">'event: incoming\n'</span>);
+    res.write(<span class="hljs-string">'data: '</span> + <span class="hljs-built_in">JSON</span>.stringify(eventData) + <span class="hljs-string">'\n\n'</span>);
+  };</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Bind our event handlers. Note that it is possible to listen for many different events
+here, within reason. I dont think stuffing 25 different events into a single endpoint
+Is appropriate.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+  ServerEvents.addListener(<span class="hljs-string">'incoming'</span>, handleIncoming)
+  ServerEvents.addListener(<span class="hljs-string">'complex'</span>, handleComplex)</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Unbind handlers when the client closes the browser window.
+Obviously we dont want events firing into the void for clients
+that are no longer connected.</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+  req.on(<span class="hljs-string">'close'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+    eventData.clientCount = eventData.clientCount -= <span class="hljs-number">1</span>;
+    ServerEvents.emit(<span class="hljs-string">'incoming'</span>)
+    ServerEvents.removeListener(<span class="hljs-string">'incoming'</span>, handleIncoming);
+    ServerEvents.removeListener(<span class="hljs-string">'complex'</span>, handleComplex)
+  })</pre></div></div>
+            
+        
+        
+            <div class="col-md-6">
+                <p>Lets tell everyone we connected, (ourself included)</p>
+
+            </div>
+            
+            <div class="col-md-6"><div class='highlight'><pre>
+  ServerEvents.emit(<span class="hljs-string">'incoming'</span>);
+
+};</pre></div></div>
+            
+        
+    </div>
+</div>
