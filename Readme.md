@@ -38,3 +38,7 @@ In a soft realtime situation, the better option may just be SSE, which is a fair
 [But there is a polyfill for IE right?](https://github.com/Yaffle/EventSource/)
 
 [Where can I learn more about this?](https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events)
+
+### Some helpful libraries. 
+[iOS/mac](https://github.com/neilco/EventSource)
+[Android](https://github.com/andll/eventsource-java)
